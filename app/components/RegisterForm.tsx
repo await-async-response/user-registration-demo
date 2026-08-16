@@ -1,12 +1,38 @@
 "use client";
 
 export default function RegisterForm() {
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    const formData = new FormData(event.currentTarget);
+    const form = event.currentTarget;
+    const formData = new FormData(form);
     const data = Object.fromEntries(formData.entries());
-    validatePasswords(event.currentTarget);
-    console.log(data);
+    validatePasswords(form);
+
+    try {
+      const response = await fetch('/api/auth/register', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data),
+      });
+
+      const json = await response.json();
+      if (!response.ok) {
+        if (json.error?.name === "ValidationError") {
+          json.error.issues.forEach((issue: any) => {
+            const input = form.elements.namedItem(issue.path[0]) as HTMLInputElement;
+            if (input) {
+              input.setCustomValidity(issue.message);
+              input.reportValidity();
+            }
+          });
+        }
+      }
+      
+    } catch (error) {
+      console.log('Error during registration:', error);
+    }
   };
 
   const validatePasswords = (form: HTMLFormElement) => {
@@ -47,6 +73,7 @@ export default function RegisterForm() {
           name="email"
           id="email"
           pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$"
+          data-api-error="EMAIL_INVALID"
           required
         />
         <span className="input-error">Please enter a valid email address</span>
@@ -58,6 +85,7 @@ export default function RegisterForm() {
           name="password"
           id="password"
           pattern="(?=.*\d)(?=.*[!@#$%^&*])(?=.*[a-zA-Z]).{8,}"
+          data-api-error="PASSWORD_INVALID"
           required
         />
         <span className="input-error">Password must be at least 8 characters with at least 1 number and 1 symbol</span>
@@ -68,6 +96,7 @@ export default function RegisterForm() {
           type="password"
           name="confirmPassword"
           id="confirmPassword"
+          data-api-error="PASSWORDS_DO_NOT_MATCH"
           required
           onInput={(e) => e.currentTarget.setCustomValidity("")}
         />
