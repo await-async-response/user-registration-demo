@@ -15,5 +15,7 @@ export default function Home() {
 
   if (!message) return <p>Loading...</p>;
 
-  return <p className="font-bold">{message}</p>;
+  return (
+    <p className="font-bold">{message}</p>
+  );
 }
