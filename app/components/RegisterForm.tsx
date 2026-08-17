@@ -1,7 +1,8 @@
 "use client";
+import { SubmitEvent } from "react";
 
 export default function RegisterForm() {
-  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (event: SubmitEvent<HTMLFormElement>) => {
     event.preventDefault();
     const form = event.currentTarget;
     const formData = new FormData(form);
@@ -28,8 +29,9 @@ export default function RegisterForm() {
             }
           });
         }
+      } else {
+        window.location.href = '/profile';
       }
-      
     } catch (error) {
       console.log('Error during registration:', error);
     }

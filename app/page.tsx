@@ -1,21 +1,24 @@
 'use client';
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 
 export default function Home() {
-  const [message, setMessage] = useState();
-
   useEffect(() => {
-    const fetchData = async () => {
-      const res = await fetch('/api/hello');
-      const { message } = await res.json();
-      setMessage(message);
-    }
-    fetchData();
-  }, [])
-
-  if (!message) return <p>Loading...</p>;
+    fetch('/api/auth')
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.message === 'Authenticated') {
+          window.location.href = '/profile';
+        } else {
+          window.location.href = '/login';
+        }
+      })
+      .catch((error) => {
+        console.error('Error fetching authentication status:', error);
+        window.location.href = '/login';
+      });
+  }, []);
 
   return (
-    <p className="font-bold">{message}</p>
+    <p className="font-bold">Redirecting...</p>
   );
 }

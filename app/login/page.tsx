@@ -1,17 +1,17 @@
 import type { Metadata } from 'next';
-import RegisterForm from "../components/RegisterForm";
+import LoginForm from "../components/LoginForm";
 
 export const metadata: Metadata = {
-  title: 'Register'
+  title: 'Login'
 }
 
-export default function Register() {
+export default function Login() {
   return (
     <div className="flex justify-center items-center w-full min-h-screen p-4 gradient-bg1">
       <div className="card w-full max-w-xl">
-        <h1>Create a new account</h1>
+        <h1>Sign in</h1>
         <hr />
-        <RegisterForm />
+        <LoginForm />
       </div>
     </div>
   );
