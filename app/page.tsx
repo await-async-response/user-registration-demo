@@ -3,7 +3,7 @@ import { useEffect } from 'react';
 
 export default function Home() {
   useEffect(() => {
-    fetch('/api/auth')
+    fetch('/api/auth/me')
       .then((response) => response.json())
       .then((data) => {
         if (data.message === 'Authenticated') {

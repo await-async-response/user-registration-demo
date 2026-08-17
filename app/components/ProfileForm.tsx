@@ -1,5 +1,5 @@
 "use client";
-import { SubmitEvent, useState } from "react";
+import { SubmitEvent } from "react";
 
 type Props = {
   profile?: {
@@ -59,7 +59,7 @@ export default function ProfileForm({ profile }: Props) {
             type="text"
             name="firstName"
             id="firstName"
-            defaultValue={profile?.firstName ?? ""}
+            defaultValue={profile?.firstName}
           />
         </div>
         <div className="input-field col-span-1 max-sm:col-span-2">
@@ -68,7 +68,7 @@ export default function ProfileForm({ profile }: Props) {
             type="text"
             name="lastName"
             id="lastName"
-            defaultValue={profile?.lastName ?? ""}
+            defaultValue={profile?.lastName}
           />
         </div>
         <div className="input-field col-span-1 max-sm:col-span-2">
@@ -77,7 +77,8 @@ export default function ProfileForm({ profile }: Props) {
             type="date"
             name="dateOfBirth"
             id="dateOfBirth"
-            defaultValue={profile?.dateOfBirth ?? ""}
+            defaultValue={profile?.dateOfBirth}
+            onInput={(e) => e.currentTarget.setCustomValidity("")}
           />
         </div>
       </div>
@@ -89,7 +90,7 @@ export default function ProfileForm({ profile }: Props) {
             type="text"
             name="street"
             id="street"
-            defaultValue={profile?.street ?? ""}
+            defaultValue={profile?.street}
           />
         </div>
         <div className="input-field col-span-1 max-sm:col-span-2">
@@ -98,7 +99,7 @@ export default function ProfileForm({ profile }: Props) {
             type="text"
             name="city"
             id="city"
-            defaultValue={profile?.city ?? ""}
+            defaultValue={profile?.city}
           />
         </div>
         <div className="input-field col-span-1 max-sm:col-span-2">
@@ -107,7 +108,7 @@ export default function ProfileForm({ profile }: Props) {
             type="text"
             name="postalCode"
             id="postalCode"
-            defaultValue={profile?.postalCode ?? ""}
+            defaultValue={profile?.postalCode}
           />
         </div>
         <div className="input-field col-span-1 max-sm:col-span-2">
@@ -116,7 +117,7 @@ export default function ProfileForm({ profile }: Props) {
             type="text"
             name="country"
             id="country"
-            defaultValue={profile?.country ?? ""}
+            defaultValue={profile?.country}
           />
         </div>
 

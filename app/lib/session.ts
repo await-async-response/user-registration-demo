@@ -1,6 +1,6 @@
 import { cookies } from "next/headers";
 import { verify } from "hono/jwt";
-import { AUTH_COOKIE_NAME } from "../api/auth";
+import { AUTH_COOKIE_NAME } from "../env";
 
 export type AuthPayload = {
   sub: string;
@@ -17,7 +17,8 @@ export async function getAuthPayload(): Promise<AuthPayload | null> {
 
   try {
     return (await verify(token, secret, "HS256")) as AuthPayload;
-  } catch {
+  } catch (err) {
+    console.log(err);
     return null;
   }
 }

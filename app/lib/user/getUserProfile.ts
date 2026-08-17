@@ -1,13 +1,11 @@
-import { getDataSource } from "../../api/data-source";
+import { getDataSource } from '../../db/getDataSource';
 import { User } from "../../api/entities/User";
-import { HTTPException } from "hono/http-exception";
 
 export async function getUserProfile(id: number) {
   const dataSource = await getDataSource();
-  const userRepository = dataSource.getRepository<User>("User");
-  const user = await userRepository.findOneBy({ id });
-  if (!user) {
-    throw new HTTPException(404, { message: 'User not found' });
-  }
-  return user;
+  const userRepository = dataSource.getRepository<User>("users");
+  // Return null rather than throwing: a valid JWT can still point to a user
+  // that no longer exists (e.g. the database was reset), which callers should
+  // treat as an invalid session rather than a hard error.
+  return userRepository.findOneBy({ id });
 }

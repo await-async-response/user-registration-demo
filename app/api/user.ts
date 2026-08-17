@@ -4,8 +4,9 @@ import { jwt } from "hono/jwt";
 import { z } from 'zod';
 import { getUserProfile } from "../lib/user/getUserProfile";
 import { updateUserProfile } from "../lib/user/updateUserProfile";
-import { AUTH_COOKIE_NAME } from './auth';
 import { zValidator } from './util/validator-wrapper';
+import { AUTH_COOKIE_NAME } from "../env";
+import { HTTPException } from "hono/http-exception";
 
 const user = new Hono<{ Variables: JwtVariables }>();
 
@@ -59,6 +60,9 @@ user.get('/profile', async (c) => {
   const { sub } = c.get('jwtPayload');
 
   const user = await getUserProfile(Number(sub));
+  if (!user) {
+    throw new HTTPException(404, { message: 'User not found' });
+  }
 
   return c.json({
     data: {

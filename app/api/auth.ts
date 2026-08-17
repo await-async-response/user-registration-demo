@@ -5,14 +5,11 @@ import { HTTPException } from 'hono/http-exception';
 import { z } from 'zod';
 import { zValidator } from './util/validator-wrapper';
 import { hashPassword, verifyPassword } from './util/password';
-import { getDataSource } from './data-source';
+import { getDataSource } from '../db/getDataSource';
 import { User } from './entities/User';
+import { AUTH_COOKIE_NAME, JWT_EXPIRES_IN_SECONDS, JWT_SECRET } from '../env';
 
 const auth = new Hono();
-
-const JWT_SECRET = process.env.JWT_SECRET;
-const JWT_EXPIRES_IN_SECONDS = 60 * 60 * 8; // 8 hours
-export const AUTH_COOKIE_NAME = 'auth_token';
 
 const registerSchema = z.object({
   email: z.email(),
@@ -33,7 +30,7 @@ const loginSchema = z.object({
 auth.post('/register', zValidator('json', registerSchema), async (c) => {
   const { email, password, firstName, lastName } = c.req.valid('json');
   const dataSource = await getDataSource();
-  const userRepository = dataSource.getRepository<User>("User");
+  const userRepository = dataSource.getRepository<User>("users");
 
   const existingUser = await userRepository.findOneBy({ email });
   if (existingUser) {
@@ -65,7 +62,7 @@ auth.post('/login', zValidator('json', loginSchema), async (c) => {
 
   const { email, password } = c.req.valid('json');
   const dataSource = await getDataSource();
-  const userRepository = dataSource.getRepository<User>("User");
+  const userRepository = dataSource.getRepository<User>("users");
 
   const user = await userRepository.findOne({
     where: { email },
@@ -105,7 +102,7 @@ auth.all('/logout', (c) => {
   });
 });
 
-auth.get('/', async (c) => {
+auth.get('/me', async (c) => {
   const token = getCookie(c, AUTH_COOKIE_NAME);
   if (!token) {
     return c.json({ error: { message: 'Not authenticated' } }, 401);

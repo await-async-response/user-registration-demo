@@ -1,6 +1,10 @@
 import { Column, CreateDateColumn, Entity, PrimaryGeneratedColumn } from "typeorm";
 
-@Entity()
+// Named explicitly: without it, TypeORM derives the table name from the
+// class's runtime `.name`, which production minification mangles
+// differently per bundle (e.g. "u", "s", "h"), splitting data across
+// multiple accidental tables.
+@Entity("users")
 export class User {
   @PrimaryGeneratedColumn()
   id: number;
