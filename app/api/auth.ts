@@ -4,7 +4,7 @@ import { zValidator } from './util/validator-wrapper';
 
 const auth = new Hono();
 
-const schema = z.object({
+const registerSchema = z.object({
   email: z.email(),
   password: z.string().min(8),
   confirmPassword: z.string().min(8),
@@ -15,7 +15,7 @@ const schema = z.object({
   path: ["confirmPassword"],
 });
 
-auth.post('/register', zValidator('json', schema), async (c) => {
+auth.post('/register', zValidator('json', registerSchema), async (c) => {
   const { email, password, firstName, lastName } = c.req.valid('json');
   console.log('User registered:', { email, firstName, lastName });
 
