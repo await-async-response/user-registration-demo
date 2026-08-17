@@ -1,6 +1,6 @@
 # User Registration/Profile Demo
 
-This app is ONLY for demonstration purposes and not suite for production.
+This app is ONLY for demonstration purposes and not suited for production.
 
 ## Technologies used:
 
