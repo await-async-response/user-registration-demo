@@ -3,12 +3,12 @@ import { handle } from 'hono/vercel';
 import "reflect-metadata";
 import auth from '../auth';
 import user from '../user';
-import { AppDataSource } from '../data-source';
+import { getDataSource } from '../data-source';
 
 const app = new Hono().basePath('/api');
 
 try {
-  await AppDataSource.initialize();
+  await getDataSource();
 } catch (error) {
   console.log(error);
 }

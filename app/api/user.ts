@@ -1,8 +1,21 @@
 import { Hono } from "hono";
+import type { JwtVariables } from "hono/jwt";
+import { jwt } from "hono/jwt";
 import { z } from 'zod';
+import { getUserProfile } from "../lib/user/getUserProfile";
+import { updateUserProfile } from "../lib/user/updateUserProfile";
+import { AUTH_COOKIE_NAME } from './auth';
 import { zValidator } from './util/validator-wrapper';
 
-const user = new Hono();
+const user = new Hono<{ Variables: JwtVariables }>();
+
+user.use('*', async (c, next) => {
+  const secret = process.env.JWT_SECRET;
+  if (!secret) {
+    return c.json({ error: { message: 'JWT_SECRET is not configured' } }, 500);
+  }
+  return jwt({ secret, alg: "HS256", cookie: AUTH_COOKIE_NAME })(c, next);
+});
 
 const profileSchema = z.object({
   firstName: z.optional(z.string()),
@@ -16,18 +29,47 @@ const profileSchema = z.object({
 
 user.post('/profile', zValidator('json', profileSchema), async (c) => {
   const { firstName, lastName, dateOfBirth, street, city, postalCode, country } = c.req.valid('json');
-  console.log('User profile updated:', { firstName, lastName, dateOfBirth, street, city, postalCode, country });
+  const { sub } = c.get('jwtPayload');
+
+  const user = await updateUserProfile(Number(sub), {
+    firstName,
+    lastName,
+    dateOfBirth,
+    street,
+    city,
+    postalCode,
+    country,
+  });
 
   return c.json({
     message: 'User profile updated successfully',
     data: {
-      firstName,
-      lastName,
-      dateOfBirth,
-      street,
-      city,
-      postalCode,
-      country,
+      firstName: user.firstName,
+      lastName: user.lastName,
+      dateOfBirth: user.dateOfBirth,
+      street: user.street,
+      city: user.city,
+      postalCode: user.postalCode,
+      country: user.country,
+    },
+  });
+});
+
+user.get('/profile', async (c) => {
+  const { sub } = c.get('jwtPayload');
+
+  const user = await getUserProfile(Number(sub));
+
+  return c.json({
+    data: {
+      email: user.email,
+      firstName: user.firstName,
+      lastName: user.lastName,
+      dateOfBirth: user.dateOfBirth,
+      street: user.street,
+      city: user.city,
+      postalCode: user.postalCode,
+      country: user.country,
     },
   });
 });
